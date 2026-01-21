@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { GraduationCap, User } from "lucide-react";
+import { MarkdownRenderer } from "@/lib/markdown";
 
 interface ChatMessageProps {
   content: string;
@@ -46,8 +47,10 @@ export const ChatMessage = ({ content, role, isTyping }: ChatMessageProps) => {
             <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-typing [animation-delay:0.2s]" />
             <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-typing [animation-delay:0.4s]" />
           </div>
-        ) : (
+        ) : isUser ? (
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
+        ) : (
+          <MarkdownRenderer content={content} />
         )}
       </div>
     </div>
