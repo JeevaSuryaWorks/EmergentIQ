@@ -41,6 +41,8 @@ import {
   GraduationCap,
   MessageSquare,
   BarChart3,
+  Shield,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -70,6 +72,14 @@ interface Analytics {
   totalCourses: number;
   totalChats: number;
   pendingFeedback: number;
+  totalAdmins: number;
+}
+
+interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  created_at: string;
 }
 
 export default function Admin() {
@@ -77,9 +87,11 @@ export default function Admin() {
   const navigate = useNavigate();
   const [colleges, setColleges] = useState<College[]>([]);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [editingCollege, setEditingCollege] = useState<College | null>(null);
 
   // Form state for college
@@ -92,6 +104,13 @@ export default function Admin() {
     website: "",
     description: "",
     established_year: "",
+  });
+
+  // Form state for new admin
+  const [adminFormData, setAdminFormData] = useState({
+    email: "",
+    password: "",
+    fullName: "",
   });
 
   useEffect(() => {
@@ -109,7 +128,12 @@ export default function Admin() {
 
   const loadData = async () => {
     setIsLoading(true);
-    await Promise.all([loadColleges(), loadFeedback(), loadAnalytics()]);
+    await Promise.all([
+      loadColleges(),
+      loadFeedback(),
+      loadAnalytics(),
+      loadAdmins(),
+    ]);
     setIsLoading(false);
   };
 
@@ -141,16 +165,50 @@ export default function Admin() {
     }
   };
 
+  const loadAdmins = async () => {
+    const { data: adminRoles, error: roleError } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
+
+    if (roleError) {
+      console.error(roleError);
+      return;
+    }
+
+    const adminIds = adminRoles.map((r) => r.user_id);
+    if (adminIds.length === 0) {
+      setAdmins([]);
+      return;
+    }
+
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("user_id, full_name, created_at")
+      .in("user_id", adminIds);
+
+    if (profileError) {
+      console.error(profileError);
+    } else {
+      setAdmins(
+        profiles.map((p) => ({
+          id: p.user_id,
+          email: "Verified Admin",
+          full_name: p.full_name,
+          created_at: p.created_at,
+        }))
+      );
+    }
+  };
+
   const loadAnalytics = async () => {
-    const [collegesCount, coursesCount, chatsCount, feedbackCount] =
+    const [collegesCount, coursesCount, chatsCount, feedbackCount, adminsCount] =
       await Promise.all([
         supabase.from("colleges").select("id", { count: "exact", head: true }),
         supabase.from("courses").select("id", { count: "exact", head: true }),
         supabase.from("chat_history").select("id", { count: "exact", head: true }),
-        supabase
-          .from("feedback")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "pending"),
+        supabase.from("feedback").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "admin"),
       ]);
 
     setAnalytics({
@@ -158,6 +216,7 @@ export default function Admin() {
       totalCourses: coursesCount.count || 0,
       totalChats: chatsCount.count || 0,
       pendingFeedback: feedbackCount.count || 0,
+      totalAdmins: adminsCount.count || 0,
     });
   };
 
@@ -203,6 +262,36 @@ export default function Admin() {
         loadAnalytics();
         closeModal();
       }
+    }
+  };
+
+  const handleAdminSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("add-admin", {
+        body: {
+          email: adminFormData.email,
+          password: adminFormData.password,
+          fullName: adminFormData.fullName,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message || "Failed to create admin");
+      } else {
+        toast.success("Admin created successfully");
+        setIsAdminModalOpen(false);
+        setAdminFormData({ email: "", password: "", fullName: "" });
+        loadAdmins();
+        loadAnalytics();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred while creating admin");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -279,21 +368,15 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-          </div>
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">Admin Dashboard</h1>
+          <p className="text-white/40">Manage university data and user interactions.</p>
         </div>
-      </header>
+      </div>
 
-      <main className="container max-w-7xl mx-auto px-4 py-8">
+      <div>
         {/* Analytics Cards */}
         {analytics && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -339,12 +422,12 @@ export default function Admin() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-destructive/10 rounded-lg">
-                    <BarChart3 className="h-6 w-6 text-destructive" />
+                  <div className="p-3 bg-purple-500/10 rounded-lg">
+                    <Shield className="h-6 w-6 text-purple-500" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{analytics.pendingFeedback}</p>
-                    <p className="text-sm text-muted-foreground">Pending Feedback</p>
+                    <p className="text-2xl font-bold">{analytics.totalAdmins}</p>
+                    <p className="text-sm text-muted-foreground">Admins</p>
                   </div>
                 </div>
               </CardContent>
@@ -356,12 +439,13 @@ export default function Admin() {
           <TabsList className="mb-6">
             <TabsTrigger value="colleges">Colleges</TabsTrigger>
             <TabsTrigger value="feedback">Feedback</TabsTrigger>
+            <TabsTrigger value="admins">Admins</TabsTrigger>
           </TabsList>
 
           <TabsContent value="colleges">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Manage Colleges</CardTitle>
+                <CardTitle className="text-white">Manage Colleges</CardTitle>
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
                     <Button onClick={() => closeModal()}>
@@ -558,7 +642,7 @@ export default function Admin() {
           <TabsContent value="feedback">
             <Card>
               <CardHeader>
-                <CardTitle>User Feedback</CardTitle>
+                <CardTitle className="text-white">User Feedback</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -587,8 +671,8 @@ export default function Admin() {
                                 item.feedback_type === "positive"
                                   ? "default"
                                   : item.feedback_type === "negative"
-                                  ? "destructive"
-                                  : "secondary"
+                                    ? "destructive"
+                                    : "secondary"
                               }
                             >
                               {item.feedback_type || "Unknown"}
@@ -603,8 +687,8 @@ export default function Admin() {
                                 item.status === "resolved"
                                   ? "default"
                                   : item.status === "reviewed"
-                                  ? "secondary"
-                                  : "outline"
+                                    ? "secondary"
+                                    : "outline"
                               }
                             >
                               {item.status}
@@ -638,8 +722,123 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="admins">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-white">Manage Admins</CardTitle>
+                <Dialog open={isAdminModalOpen} onOpenChange={setIsAdminModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Admin
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add New Admin</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleAdminSubmit} className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="adminEmail">Email Address *</Label>
+                        <Input
+                          id="adminEmail"
+                          type="email"
+                          placeholder="admin@example.com"
+                          value={adminFormData.email}
+                          onChange={(e) =>
+                            setAdminFormData({ ...adminFormData, email: e.target.value })
+                          }
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="adminPassword">Password *</Label>
+                        <Input
+                          id="adminPassword"
+                          type="password"
+                          placeholder="••••••••"
+                          value={adminFormData.password}
+                          onChange={(e) =>
+                            setAdminFormData({ ...adminFormData, password: e.target.value })
+                          }
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="adminName">Full Name</Label>
+                        <Input
+                          id="adminName"
+                          type="text"
+                          placeholder="John Doe"
+                          value={adminFormData.fullName}
+                          onChange={(e) =>
+                            setAdminFormData({ ...adminFormData, fullName: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsAdminModalOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={isLoading}>
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            "Create Admin"
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Full Name</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Joined</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {admins.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center py-8">
+                          <p className="text-muted-foreground">No admins found</p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      admins.map((admin) => (
+                        <TableRow key={admin.id}>
+                          <TableCell className="font-medium">
+                            {admin.full_name || "—"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">Admin</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(admin.created_at).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
-      </main>
+      </div>
     </div>
   );
 }

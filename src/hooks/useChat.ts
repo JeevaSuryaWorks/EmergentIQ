@@ -8,15 +8,44 @@ export interface Message {
   role: "user" | "assistant";
 }
 
-export const useChat = () => {
+export const useChat = (initialSessionId?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState(initialSessionId || (() => crypto.randomUUID()));
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  const loadSession = useCallback(async (id: string) => {
+    setSessionId(id);
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("chat_history")
+        .select("message, role, created_at")
+        .eq("session_id", id)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+
+      const formattedMessages: Message[] = data.map((row: any) => ({
+        id: crypto.randomUUID(),
+        content: row.message,
+        role: row.role as "user" | "assistant",
+      }));
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Error loading session:", error);
+      toast.error("Failed to load chat history");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const sendMessage = useCallback(async (content: string) => {
+    if (!content.trim()) return;
+
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       content,
       role: "user",
     };
@@ -24,132 +53,73 @@ export const useChat = () => {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Prepare messages for API
-    const apiMessages = [...messages, userMessage].map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
-
+    // Use a fresh abort controller for each request
+    if (abortControllerRef.current) abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            messages: apiMessages,
-            sessionId,
-            userId: user?.id,
-          }),
-          signal: abortControllerRef.current.signal,
-        }
-      );
+      // 1. Get current session instead of full user check
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 429) {
-          toast.error("Rate limit exceeded. Please wait a moment and try again.");
-        } else if (response.status === 402) {
-          toast.error("Service quota exceeded. Please try again later.");
-        } else {
-          toast.error(errorData.error || "Failed to get response");
-        }
-        setIsLoading(false);
-        return;
+      // 2. Prepare the payload (including previous messages)
+      // We use a functional update for messages but for the payload we need the current snapshot
+      const currentMessages = [...messages, userMessage].map(m => ({
+        role: m.role,
+        content: m.content
+      }));
+
+      // 3. Invoke function with signal
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: {
+          messages: currentMessages,
+          sessionId,
+          userId: session?.user?.id,
+        },
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (error) {
+        console.error("Supabase edge function error:", error);
+        // Try to parse the response body if it exists on the error object (sometimes it does in the custom error types)
+        // or re-throw with more context
+        throw new Error(error.message || "AI backend failed to respond");
       }
 
-      // Check if it's a cached response (non-streaming)
-      const contentType = response.headers.get("content-type");
-      if (contentType?.includes("application/json")) {
-        const data = await response.json();
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: data.content,
-          role: "assistant",
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-        setIsLoading(false);
-        return;
+      if (!data?.content) {
+        throw new Error("No response content from AI service");
       }
-
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No response body");
-
-      const decoder = new TextDecoder();
-      let assistantContent = "";
-      let textBuffer = "";
 
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: "",
+        id: crypto.randomUUID(),
+        content: data.content,
         role: "assistant",
       };
+
       setMessages((prev) => [...prev, assistantMessage]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const deltaContent = parsed.choices?.[0]?.delta?.content;
-            if (deltaContent) {
-              assistantContent += deltaContent;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMessage.id
-                    ? { ...m, content: assistantContent }
-                    : m
-                )
-              );
-            }
-          } catch {
-            // Incomplete JSON, put back and wait
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.debug("Chat request cancelled by user");
+      } else {
+        console.error("Chat error details:", error);
+        // If it's a FunctionsHttpError, it might have context
+        if (error.context && typeof error.context.json === 'function') {
+          error.context.json().then((details: any) => {
+            console.error("Edge Function Error Details:", details);
+            toast.error(`Error: ${details.error || error.message}`);
+          }).catch(() => {
+            toast.error(error.message || "Failed to get response. Please try again.");
+          });
+        } else {
+          toast.error(error.message || "Failed to get response. Please try again.");
         }
       }
-
-      // Save assistant message to chat history
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (sessionId && assistantContent) {
-        await supabase.from("chat_history").insert({
-          session_id: sessionId,
-          user_id: currentUser?.id || null,
-          message: assistantContent,
-          role: "assistant",
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        return;
-      }
-      console.error("Chat error:", error);
-      toast.error("Failed to send message. Please try again.");
     } finally {
+      // Clear controller if it matches the current one (meaning we finished)
+      // Note: If we started a NEW request, current would be different, so don't null it.
+      // But here we can't easily check if it's "ours".
+      // However, since we are setting isLoading(false), we effectively "end" the active state.
+      // We should only null it if we are sure we are the active one.
+      // But cleaner: Just let it persist or null it.
       setIsLoading(false);
     }
   }, [messages, sessionId]);
@@ -169,6 +139,8 @@ export const useChat = () => {
     sendMessage,
     clearMessages,
     cancelRequest,
+    loadSession,
+    setSessionId,
     sessionId,
   };
 };

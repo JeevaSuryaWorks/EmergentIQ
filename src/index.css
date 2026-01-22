@@ -6,65 +6,90 @@
 
 @layer base {
   :root {
-    /* Academic Navy & Teal Theme */
-    --background: 220 25% 97%;
-    --foreground: 222 47% 11%;
+    /* Academic Navy & Teal Theme (Dark Default) */
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
     /* Deep Navy Primary */
-    --primary: 222 47% 20%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 175 70% 50%;
+    --primary-foreground: 222 47% 11%;
 
     /* Teal Accent */
-    --secondary: 180 60% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 222 30% 20%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 20% 93%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 222 30% 15%;
+    --muted-foreground: 215 20% 65%;
 
     /* Cyan/Teal Accent */
-    --accent: 175 70% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 175 70% 45%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 62% 30%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 175 70% 42%;
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 175 70% 50%;
 
     --radius: 0.75rem;
 
     /* Custom tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(222 47% 20%) 0%, hsl(222 60% 30%) 50%, hsl(175 70% 35%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(175 70% 42%) 0%, hsl(180 60% 45%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(175 70% 42%) 0%, hsl(180 60% 45%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(220 25% 97%) 0%, hsl(220 30% 94%) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
-    
-    --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
-    --shadow-elevated: 0 8px 30px -8px rgba(0, 0, 0, 0.12);
+    --gradient-hero: linear-gradient(180deg, hsl(222 47% 8%) 0%, hsl(222 47% 11%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
+
+    --shadow-soft: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
+    --shadow-elevated: 0 8px 30px -8px rgba(0, 0, 0, 0.4);
     --shadow-glow: 0 0 40px -10px hsl(175 70% 42% / 0.3);
 
     /* Chat specific */
-    --chat-user: 222 47% 20%;
-    --chat-user-foreground: 210 40% 98%;
-    --chat-bot: 0 0% 100%;
-    --chat-bot-foreground: 222 47% 11%;
-    --chat-bot-border: 220 20% 90%;
+    --chat-user: 175 70% 45%;
+    --chat-user-foreground: 222 47% 11%;
+    --chat-bot: 222 47% 14%;
+    --chat-bot-foreground: 210 40% 98%;
+    --chat-bot-border: 222 30% 20%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 175 70% 42%;
+    --sidebar-background: 222 47% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 175 70% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 30% 15%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 175 70% 50%;
+  }
+
+  /* Naruto Theme Overrides for Light Mode (since it forces dark backgrounds) */
+  .light {
+    --background: 0 0% 5%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 0 72% 51%;
+    /* Itachi Red */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 0 72% 30%;
+    --accent-foreground: 210 40% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 72% 51%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 0 0% 10%;
   }
 
   .dark {
@@ -119,11 +144,13 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased min-h-screen;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: 'Playfair Display', serif;
   }
 }
@@ -161,28 +188,49 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideUp {
-    from { 
-      opacity: 0; 
-      transform: translateY(16px); 
+    from {
+      opacity: 0;
+      transform: translateY(16px);
     }
-    to { 
-      opacity: 1; 
-      transform: translateY(0); 
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
   @keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-4px); }
+
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+    }
+
+    30% {
+      transform: translateY(-4px);
+    }
   }
 
   @keyframes pulseSoft {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
   }
 }

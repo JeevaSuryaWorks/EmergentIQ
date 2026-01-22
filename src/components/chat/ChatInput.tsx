@@ -27,20 +27,22 @@ export const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full max-w-3xl mx-auto">
       <div
         className={cn(
-          "flex items-end gap-3 p-3 rounded-2xl bg-card border border-border/50 shadow-elevated transition-all duration-300",
-          message.trim() && "chat-input-glow"
+          "flex items-center gap-2 p-2 rounded-[2rem] bg-zinc-900/80 backdrop-blur-2xl border border-white/10 shadow-2xl transition-all duration-500",
+          "focus-within:border-primary/50 focus-within:bg-zinc-900/95",
+          message.trim() && "shadow-primary/10 shadow-[0_0_50px_-10px_rgba(59,130,246,0.3)]"
         )}
       >
-        <div className="flex-1 relative">
+        <div className="flex-1 flex items-center min-h-[52px] pl-4">
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about any college, course, or admission..."
-            className="min-h-[52px] max-h-[200px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground p-2"
+            placeholder="Search universities, careers, or ask for guidance..."
+            className="w-full resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-white placeholder:text-white/20 p-0 py-2.5 font-medium text-[15px] max-h-[200px]"
+            rows={1}
             disabled={isLoading}
           />
         </div>
@@ -49,10 +51,10 @@ export const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
           onClick={handleSend}
           disabled={!message.trim() || isLoading}
           size="icon"
-          className="h-11 w-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shrink-0 transition-all duration-200 hover:scale-105 disabled:opacity-50"
+          className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-white shrink-0 transition-all duration-300 hover:scale-110 active:scale-95 disabled:opacity-20 shadow-lg shadow-primary/20"
         >
           {isLoading ? (
-            <Sparkles className="w-5 h-5 animate-pulse-soft" />
+            <Sparkles className="w-5 h-5 animate-spin" />
           ) : (
             <Send className="w-5 h-5" />
           )}

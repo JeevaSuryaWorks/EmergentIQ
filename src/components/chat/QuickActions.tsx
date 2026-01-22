@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { 
-  GraduationCap, 
-  DollarSign, 
-  BarChart3, 
-  MapPin, 
+import {
+  GraduationCap,
+  DollarSign,
+  BarChart3,
+  MapPin,
   BookOpen,
   Scale
 } from "lucide-react";
@@ -16,7 +16,7 @@ const quickActions = [
   {
     icon: GraduationCap,
     label: "Top Universities",
-    query: "What are the top 10 universities in the world for 2024?",
+    query: "What are the top 10 universities in the world for 2025?",
   },
   {
     icon: DollarSign,

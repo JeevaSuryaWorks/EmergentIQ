@@ -16,7 +16,7 @@ export const ChatHeader = () => {
             </div>
             <div>
               <h1 className="font-display text-xl font-semibold text-foreground">
-                College AI
+                EmergentIQ
               </h1>
               <p className="text-xs text-muted-foreground">
                 Your global education guide
