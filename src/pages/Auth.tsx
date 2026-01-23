@@ -44,11 +44,13 @@ const Auth = () => {
                     toast.success("Welcome back!");
                 }
             } else {
-                const { error } = await signUp(email, password, fullName);
+                const { error } = await signUp(email, password, fullName, {
+                    emailRedirectTo: `${window.location.origin}/email-verified`
+                });
                 if (error) {
                     toast.error(error.message);
                 } else {
-                    toast.success("Account created successfully!");
+                    toast.success("Account created! Please check your email to verify.");
                 }
             }
         } finally {
