@@ -19,6 +19,7 @@ const Compare = lazy(() => import("@/pages/Compare"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const Saved = lazy(() => import("@/pages/Saved"));
 const Auth = lazy(() => import("@/pages/Auth"));
+const EmailVerified = lazy(() => import("@/pages/EmailVerified"));
 const Rankings = lazy(() => import("@/pages/Rankings"));
 const About = lazy(() => import("@/pages/About"));
 const Careers = lazy(() => import("@/pages/Careers"));
@@ -38,6 +39,7 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/email-verified" element={<EmailVerified />} />
           <Route
             path="/chat"
             element={

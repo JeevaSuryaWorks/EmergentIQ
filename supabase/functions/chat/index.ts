@@ -193,48 +193,55 @@ Deno.serve(async (req) => {
       console.error("Context fetch failed:", e);
     }
 
-    // Call AI with Key Rotation
-    const keys = [
-      Deno.env.get("EMERGENT_API_KEY"),
-      Deno.env.get("EMERGENT_API_KEY1"),
-      Deno.env.get("EMERGENT_API_KEY2"),
-      Deno.env.get("EMERGENT_API_KEY3")
-    ].filter(Boolean) as string[];
+    // Call AI with Key Rotation (Groq + Mistral Backup)
+    const providers = [
+      { key: Deno.env.get("EMERGENT_API_KEY"), provider: "groq", model: "llama-3.3-70b-versatile" },
+      { key: Deno.env.get("EMERGENT_API_KEY1"), provider: "groq", model: "llama-3.3-70b-versatile" },
+      { key: Deno.env.get("EMERGENT_API_KEY2"), provider: "groq", model: "llama-3.3-70b-versatile" },
+      { key: Deno.env.get("EMERGENT_API_KEY3"), provider: "groq", model: "llama-3.1-8b-instant" },
+      { key: Deno.env.get("EMERGENT_API_KEY4"), provider: "mistral", model: "mistral-small-latest" }
+    ].filter(p => p.key) as { key: string; provider: "groq" | "mistral"; model: string }[];
 
     let reply = "";
     let lastError: Error | null = null;
     let success = false;
 
     // Retry configuration
-    const MAX_RETRIES_PER_KEY = 1;
+    // const MAX_RETRIES_PER_KEY = 1; // Removed unused variable
 
-    for (const [index, key] of keys.entries()) {
+    for (const [index, config] of providers.entries()) {
       try {
-        console.log(`Attempting AI request with Key #${index + 1}...`);
+        console.log(`Attempting AI request with Key #${index + 1} (${config.provider})...`);
 
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        let apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+        if (config.provider === "mistral") {
+          apiUrl = "https://api.mistral.ai/v1/chat/completions";
+        }
+
+        const response = await fetch(apiUrl, {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${key}`,
+            "Authorization": `Bearer ${config.key}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: config.model,
             messages: [{ role: "system", content: SYSTEM_PROMPT + contextData }, ...messages],
             temperature: 0.6,
-            max_tokens: 2048
+            max_tokens: 2048,
+            ...(config.provider === "groq" ? {} : {}) // Add specific params if needed
           }),
         });
 
         if (response.status === 429) {
-          console.warn(`Key #${index + 1} hit rate limit (429).`);
+          console.warn(`Key #${index + 1} (${config.provider}) hit rate limit (429).`);
           lastError = new Error(`Rate limit hit on Key #${index + 1}`);
           continue; // Try next key
         }
 
         if (!response.ok) {
           const errText = await response.text();
-          throw new Error(`Groq API Error (${response.status}): ${errText}`);
+          throw new Error(`${config.provider} API Error (${response.status}): ${errText}`);
         }
 
         const result = await response.json();
@@ -243,7 +250,7 @@ Deno.serve(async (req) => {
         break; // Success, stop trying keys
 
       } catch (err) {
-        console.error(`Key #${index + 1} failed:`, err);
+        console.error(`Key #${index + 1} (${config.provider}) failed:`, err);
         lastError = err;
         // Continue to next key
       }

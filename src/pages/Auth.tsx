@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, GraduationCap, ArrowLeft, Mail, Lock, User as UserIcon } from "lucide-react";
+import { Loader2, GraduationCap, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Hero3D } from "@/components/landing/Hero3D";
 
@@ -13,6 +13,7 @@ const Auth = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [fullName, setFullName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const { signIn, signUp, user, isAdmin } = useAuth();
@@ -150,15 +151,26 @@ const Auth = () => {
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
                                     <Input
                                         id="password"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
-                                        className="bg-white/5 border-white/10 pl-10 h-12 focus:ring-primary/50"
+                                        className="bg-white/5 border-white/10 pl-10 pr-10 h-12 focus:ring-primary/50"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         minLength={6}
                                         disabled={isLoading}
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
                                 </div>
                             </div>
 
