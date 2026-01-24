@@ -157,7 +157,15 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+    @apply bg-card/40 backdrop-blur-xl border border-white/5 shadow-2xl;
+  }
+
+  .glass-panel {
+    @apply bg-zinc-950/40 backdrop-blur-2xl border border-white/5;
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, hsl(175 70% 50% / 0.15) 0%, transparent 100%);
   }
 
   .gradient-text {
@@ -167,6 +175,15 @@
 
   .chat-input-glow {
     box-shadow: var(--shadow-glow);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
 

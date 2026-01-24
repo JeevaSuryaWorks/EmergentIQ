@@ -11,18 +11,18 @@ export const DashboardLayout = ({ children }: { children?: React.ReactNode }) =>
 
     return (
         <div className={cn(
-            "flex min-h-screen w-full transition-colors duration-700",
+            "flex h-screen w-full overflow-hidden transition-colors duration-700",
             isNaruto ? "bg-[#050505] text-white" : "bg-black text-white"
         )}>
             <AppSidebar />
-            <main className="flex-1 relative overflow-hidden flex flex-col">
+            <main className="flex-1 relative overflow-y-auto flex flex-col h-screen no-scrollbar">
                 {/* Top Bar for Mobile/Trigger */}
                 <header className={cn(
                     "h-14 md:h-16 flex items-center px-4 border-b sticky top-0 z-40 backdrop-blur-md transition-colors",
                     isNaruto ? "bg-[#050505]/50 border-red-900/20" : "bg-black/50 border-white/5"
                 )}>
                     <SidebarTrigger className={cn(
-                        "h-10 w-10 transition-colors",
+                        "h-10 w-10 transition-colors md:hidden",
                         isNaruto ? "text-red-500 hover:bg-red-500/10" : "text-white hover:bg-white/10"
                     )} />
                 </header>

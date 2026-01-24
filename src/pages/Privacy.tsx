@@ -52,7 +52,7 @@ const Privacy = () => {
                         </section>
 
                         <section className="pt-10 border-t border-white/5">
-                            <p className="text-sm">Last Updated: January 2026. For questions regarding this policy, please contact privacy@EMERGENT.iq</p>
+                            <p className="text-sm">Last Updated: January 2026. For questions regarding this policy, please contact privacy@emergentiq.com</p>
                         </section>
                     </div>
                 </motion.div>

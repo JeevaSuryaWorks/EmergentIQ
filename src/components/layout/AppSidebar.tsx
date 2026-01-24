@@ -27,7 +27,8 @@ import {
     GraduationCap,
     Shield,
     Sun,
-    Moon
+    Moon,
+    Clock
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -40,6 +41,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useChatHistory } from "@/hooks/useChatHistory";
+import { HistoryDialog } from "@/components/chat/HistoryDialog";
 
 import { Pencil, Trash2, Check, X } from "lucide-react";
 import {
@@ -55,7 +57,7 @@ import {
 
 const ChatHistoryItems = () => {
     const { sessions, isLoading, renameSession, deleteSession } = useChatHistory();
-    const { setOpenMobile } = useSidebar();
+    const { setOpenMobile, isMobile } = useSidebar();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const currentSessionId = searchParams.get("session");
@@ -194,9 +196,10 @@ const ChatHistoryItems = () => {
 
 export const AppSidebar = () => {
     const { user, signOut, isAdmin } = useAuth();
-    const { setOpenMobile } = useSidebar();
+    const { setOpenMobile, isMobile } = useSidebar();
     const navigate = useNavigate();
     const location = useLocation();
+    const [historyOpen, setHistoryOpen] = useState(false);
 
     const menuItems = [
         { title: "Chat Advisor", icon: MessageSquare, path: "/chat" },
@@ -206,32 +209,42 @@ export const AppSidebar = () => {
 
     const { theme, toggleTheme } = useTheme();
     const isNaruto = theme === "light";
+    // Unified sidebar hooks above
 
     return (
-        <Sidebar className={cn(
-            "border-r transition-colors duration-700",
-            isNaruto ? "border-red-900/20 bg-[#080808]/80 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.5)]" : "border-white/5 bg-black/50 backdrop-blur-xl"
-        )}>
+        <Sidebar
+            collapsible={isMobile ? "offcanvas" : "none"}
+            className={cn(
+                "border-r transition-all duration-700",
+                isNaruto ? "border-red-900/20 bg-[#080808]/80 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.5)]" : "border-white/5 bg-black/50 backdrop-blur-xl"
+            )}
+        >
             <SidebarHeader className="p-4 md:p-6">
-                <div className="flex items-center gap-3 cursor-pointer group" onClick={() => {
-                    navigate("/");
-                    setOpenMobile(false);
-                }}>
+                <div
+                    className="flex items-center gap-3 cursor-pointer group transition-all duration-300"
+                    onClick={() => {
+                        navigate("/");
+                        if (isMobile) setOpenMobile(false);
+                    }}
+                >
                     <div className={cn(
-                        "w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110",
+                        "w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110 shrink-0",
                         isNaruto ? "bg-red-600 shadow-red-600/30" : "bg-primary shadow-primary/20"
                     )}>
                         <GraduationCap className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
                     <span className={cn(
-                        "font-bold text-lg md:text-xl tracking-tight transition-colors duration-500",
+                        "font-bold text-lg md:text-xl tracking-tight transition-all duration-500",
                         "text-white"
                     )}>EmergentIQ</span>
                 </div>
             </SidebarHeader>
 
-            <SidebarContent className={isNaruto ? "bg-transparent" : "bg-black/20"}>
-                <SidebarGroup>
+            <SidebarContent className={cn(
+                "flex flex-col min-h-0",
+                isNaruto ? "bg-transparent" : "bg-black/20"
+            )}>
+                <SidebarGroup className="shrink-0">
                     <SidebarGroupLabel className={cn(
                         "px-6 text-[10px] font-black uppercase tracking-[0.2em] mb-4 transition-colors",
                         "text-white/40"
@@ -256,7 +269,7 @@ export const AppSidebar = () => {
                                         )}
                                     >
                                         <item.icon className={cn(
-                                            "w-5 h-5 transition-colors",
+                                            "w-5 h-5 transition-colors shrink-0",
                                             location.pathname === item.path
                                                 ? "text-white"
                                                 : isNaruto ? "text-zinc-400" : "text-white/40"
@@ -269,12 +282,21 @@ export const AppSidebar = () => {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarGroup className="mt-4">
-                    <SidebarGroupLabel className={cn(
-                        "px-6 text-[10px] font-black uppercase tracking-[0.2em] mb-4 transition-colors",
-                        "text-white/40"
-                    )}>Recent Chats</SidebarGroupLabel>
-                    <SidebarGroupContent className="px-3">
+                <SidebarGroup className="mt-4 flex-1 flex flex-col min-h-0">
+                    <div className="flex items-center justify-between px-6 mb-4">
+                        <SidebarGroupLabel className={cn(
+                            "text-[10px] font-black uppercase tracking-[0.2em] transition-colors p-0 h-auto",
+                            "text-white/40"
+                        )}>Recent Chats</SidebarGroupLabel>
+                        <button
+                            onClick={() => setHistoryOpen(true)}
+                            className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 group"
+                        >
+                            History Hub <Clock className="w-3 h-3 group-hover:rotate-12 transition-transform" />
+                        </button>
+                    </div>
+                    <SidebarGroupContent className="px-3 flex-1 overflow-y-auto no-scrollbar pb-10">
+                        <HistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
                         <SidebarMenu>
                             <SidebarMenuItem key="new-chat" className="mb-2">
                                 <SidebarMenuButton
@@ -284,7 +306,7 @@ export const AppSidebar = () => {
                                     }}
                                     className="w-full h-9 md:h-10 rounded-xl px-4 border border-white/5 bg-white/5 text-white hover:bg-white/10 flex items-center gap-3"
                                 >
-                                    <MessageSquare className="w-4 h-4 text-primary" />
+                                    <MessageSquare className="w-4 h-4 text-primary shrink-0" />
                                     <span className="font-bold text-xs">New Chat</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -307,7 +329,7 @@ export const AppSidebar = () => {
                             isNaruto ? "hover:bg-zinc-100" : "hover:bg-white/5"
                         )}>
                             <Avatar className={cn(
-                                "h-9 w-9 md:h-10 md:w-10 border transition-colors",
+                                "h-9 w-9 md:h-10 md:w-10 border transition-colors shrink-0",
                                 isNaruto ? "border-zinc-200" : "border-white/20 group-hover:border-primary/50"
                             )}>
                                 <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs md:text-sm">

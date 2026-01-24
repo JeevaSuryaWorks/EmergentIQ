@@ -68,12 +68,18 @@ export const useChat = (initialSessionId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       const onboardingData = user?.user_metadata?.onboarding_data;
 
+      const GLOBAL_DEFAULT_CONTEXT = `[Global Baseline Context]
+      User Origin: India
+      Preferred Destinations: India (Primary), global (Secondary)
+      Financial Baseline: INR (₹) - All costs and budgets must be in Lakhs/Crores per annum
+      Education System: Indian (UG/PG cycles, 10+2+3/4 structure)`;
+
       // Construct personalization context string
       let personalizationContext = "";
       if (onboardingData) {
-        const locations = onboardingData.locations?.map((l: any) => l.label).join(", ") || "Any";
+        const locations = onboardingData.locations?.map((l: any) => l.label).join(", ") || "India, Global";
         const interests = Array.isArray(onboardingData.interests) ? onboardingData.interests.join(", ") : "General academics";
-        const budgetLabel = onboardingData.budget?.label || "Not specified";
+        const budgetLabel = onboardingData.budget?.label || "Balanced (INR-focused)";
         const degreeLevels = onboardingData.degreeLevels?.join(", ") || "Not specified";
         const studyModes = onboardingData.studyModes?.join(", ") || "On-campus";
 
@@ -81,9 +87,12 @@ export const useChat = (initialSessionId?: string) => {
         Target Destinations: ${locations}
         Academic Focus: ${interests}
         Degree Level: ${degreeLevels}
-        Financial Strategy: ${budgetLabel} (Primary Currency: INR)
+        Financial Strategy: ${budgetLabel} (Base Currency: INR ₹)
         Study Mode: ${studyModes}
-        Language: ${onboardingData.languagePreference || "English"}`;
+        Language: ${onboardingData.languagePreference || "English"}
+        ${GLOBAL_DEFAULT_CONTEXT}`;
+      } else {
+        personalizationContext = GLOBAL_DEFAULT_CONTEXT;
       }
 
       // 2. Prepare the payload (including previous messages)

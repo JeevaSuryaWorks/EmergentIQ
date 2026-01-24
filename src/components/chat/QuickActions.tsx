@@ -19,33 +19,33 @@ interface QuickActionsProps {
 const quickActions = [
   {
     icon: GraduationCap,
-    label: "Top Universities",
-    query: "What are the top 10 universities in the world for 2025?",
+    label: "Top Institutions",
+    query: "List the top 10 engineering and medical colleges in India (IITs, AIIMS, NITs) for 2025.",
   },
   {
     icon: DollarSign,
-    label: "Fee Comparison",
-    query: "Compare tuition fees of MIT, Stanford, and Harvard for Computer Science",
+    label: "Fee Estimates",
+    query: "What are the average annual tuition fees in INR (₹) for private vs govt medical colleges in India?",
   },
   {
     icon: BookOpen,
-    label: "Courses",
-    query: "What courses does Oxford University offer?",
+    label: "Degree info",
+    query: "How does the UG/PG degree structure work in the Indian education system compared to global standards?",
   },
   {
     icon: BarChart3,
-    label: "Rankings",
-    query: "Show me the QS World University Rankings for Engineering",
+    label: "Entrance Exams",
+    query: "Provide a calendar and difficulty analysis for major Indian entrance exams: JEE, NEET, and CUET.",
   },
   {
     icon: MapPin,
-    label: "By Location",
-    query: "What are the best universities in Germany for international students?",
+    label: "Regional Hubs",
+    query: "What are the best academic cities in India? Focus on Bangalore, Chennai, Delhi, and Mumbai.",
   },
   {
     icon: Scale,
-    label: "Compare",
-    query: "Compare MIT and Stanford for Computer Science program",
+    label: "IIT vs BITS",
+    query: "Compare IIT Bombay and BITS Pilani for Computer Science in terms of ROI and campus life in INR.",
   },
 ];
 
@@ -53,28 +53,22 @@ export const QuickActions = ({ onAction, userContext }: QuickActionsProps) => {
   const handleAction = (query: string, label: string) => {
     let personalizedQuery = query;
 
-    // Inject location context for relevant actions
-    if (userContext?.locations?.length && (label === "By Location" || label === "Top Universities" || label === "Rankings")) {
-      // Extract the most specific part (Region) for the query string to keep it natural
+    // Inject location context or default to India-First
+    if (userContext?.locations?.length) {
       const locationData = userContext.locations[0];
       const fullLocationLabel = typeof locationData === 'string' ? locationData : locationData.label;
       const region = fullLocationLabel.split(',')[0].trim();
 
-      if (label === "By Location") {
-        personalizedQuery = `What are the best universities in ${region} for international students?`;
+      if (label === "Regional Hubs") {
+        personalizedQuery = `What are the best academic centers in ${region}? Focus on educational ROI in INR.`;
       } else {
-        personalizedQuery += ` in ${region}`;
+        personalizedQuery += ` with focus on ${region}`;
       }
     }
 
-    // Inject interest context
-    if (userContext?.interests?.length && (label === "Courses" || label === "Top Universities")) {
-      const focus = userContext.interests[0];
-      if (label === "Courses") {
-        personalizedQuery = `What ${focus} courses does top universities offer?`;
-      } else {
-        personalizedQuery += ` for ${focus}`;
-      }
+    // Default grounding logic for India-first context if no specific context exists
+    if (!userContext?.locations?.length) {
+      personalizedQuery += " (Assume I am an Indian student, prioritize India-based universities and use INR ₹ for all costs)";
     }
 
     onAction(personalizedQuery);

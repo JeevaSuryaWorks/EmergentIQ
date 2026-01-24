@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight } from "lucide-react";
@@ -6,6 +7,13 @@ import { Hero3D } from "@/components/landing/Hero3D";
 
 const EmailVerified = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigate("/chat");
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [navigate]);
 
     return (
         <div className="min-h-screen bg-black text-white flex relative overflow-hidden">
@@ -53,7 +61,7 @@ const EmailVerified = () => {
                         </div>
 
                         <Button
-                            onClick={() => navigate("/onboarding")}
+                            onClick={() => navigate("/chat")}
                             className="w-full h-12 text-lg font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                         >
                             Next

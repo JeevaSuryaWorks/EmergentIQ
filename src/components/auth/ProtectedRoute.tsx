@@ -19,16 +19,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
-    // 4. Force Onboarding for non-admins
-    const isOnboardingCompleted = user.user_metadata?.onboarding_completed === true;
-    if (!isAdmin && !isOnboardingCompleted && location.pathname !== "/onboarding") {
-        return <Navigate to="/onboarding" replace />;
-    }
-
-    // 5. Prevent returning to onboarding if already completed
-    if (!isAdmin && isOnboardingCompleted && location.pathname === "/onboarding") {
-        return <Navigate to="/chat" replace />;
-    }
-
+    // Simplified ProtectedRoute: Only auth and admin checks
     return <>{children}</>;
 };
