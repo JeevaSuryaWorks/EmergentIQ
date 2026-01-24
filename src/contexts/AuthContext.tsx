@@ -52,7 +52,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } catch (err: any) {
-        if (mounted) console.error("Auth init failure:", err.message);
+        if (mounted && err.name !== 'AbortError' && !err.message?.includes('aborted')) {
+          console.error("Auth init failure:", err.message);
+        }
       } finally {
         if (mounted) {
           setIsLoading(false);

@@ -10,7 +10,7 @@ interface ProductionLoaderProps {
 export const ProductionLoader = ({
     className,
     variant = "full",
-    message = "Loading experience..."
+    message = "Loading EmergentIQ..."
 }: ProductionLoaderProps) => {
     const isFull = variant === "full";
 
