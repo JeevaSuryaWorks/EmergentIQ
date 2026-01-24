@@ -72,15 +72,15 @@ const Guide = () => {
                             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
                             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
-                            <div className="relative rounded-xl overflow-hidden border border-white/5 bg-black/50 aspect-[21/9] flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-700">
+                            <div className="relative rounded-2xl overflow-hidden border border-white/90 bg-white aspect-[21/9] flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-700 shadow-[0_0_50px_rgba(255,255,255,0.15)]">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.05)_100%)]" />
                                 <img
                                     src="/EmergentIQ_Logo.png"
                                     alt="EmergentIQ Central Hub"
-                                    className="w-full h-full object-contain p-8 md:p-12 opacity-90 group-hover:opacity-100 transition-opacity duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                                    className="w-full h-full object-contain p-8 md:p-10 opacity-100 z-10"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                <div className="absolute bottom-4 left-0 right-0 text-center">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30 group-hover:text-primary/70 transition-colors">EST. 2026</p>
+                                <div className="absolute bottom-4 left-0 right-0 text-center z-20">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.6em] text-black/30 group-hover:text-primary/90 transition-colors">EST. 2026</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -110,7 +110,7 @@ const Guide = () => {
                                 </div>
 
                                 <div className="space-y-2 mb-8">
-                                    <h3 className="text-primary font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">Head of Department</h3>
+                                    <h3 className="text-primary font-black uppercase tracking-[0.4em] text-[10px] md:text-xs">Project Guide</h3>
                                     <h2 className="text-3xl md:text-5xl font-playfair font-bold text-white tracking-tight leading-tight">
                                         Mrs. G. Mehala <span className="text-white/40 text-2xl md:text-3xl block mt-1 font-sans font-light tracking-widest uppercase">M.E.</span>
                                     </h2>
