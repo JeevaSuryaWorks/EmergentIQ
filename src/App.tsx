@@ -33,13 +33,21 @@ const Profile = lazy(() => import("@/pages/Profile"));
 const Team = lazy(() => import("@/pages/Team"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const CashControl = lazy(() => import("@/pages/admin/CashControl"));
 
-const queryClient = new QueryClient();
+import { useAppLock } from "@/hooks/useAppLock";
+import { PaymentBlocker } from "@/components/access/PaymentBlocker";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const { isUnlocked, isLoading } = useAppLock();
+
   return (
     <Suspense fallback={<ProductionLoader />}>
+      {/* Global Access Gate - Blocks everything except /cash if locked */}
+      {isUnlocked === false && !isLoading && location.pathname !== "/cash" && (
+        <PaymentBlocker />
+      )}
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -47,6 +55,17 @@ const AnimatedRoutes = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/email-verified" element={<EmailVerified />} />
           <Route path="/email-waiting" element={<EmailWaiting />} />
+
+          {/* Admin Control Rule */}
+          <Route
+            path="/cash"
+            element={
+              <ProtectedRoute>
+                <CashControl />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Dashboard Area with Sidebar Persistence */}
           <Route
             element={
@@ -84,6 +103,8 @@ const AnimatedRoutes = () => {
 };
 
 import ScrollToTop from "@/components/layout/ScrollToTop";
+
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
