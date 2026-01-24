@@ -56,14 +56,10 @@ const AnimatedRoutes = () => {
           <Route path="/email-verified" element={<EmailVerified />} />
           <Route path="/email-waiting" element={<EmailWaiting />} />
 
-          {/* Admin Control Rule */}
+          {/* Public Control Rule */}
           <Route
             path="/cash"
-            element={
-              <ProtectedRoute>
-                <CashControl />
-              </ProtectedRoute>
-            }
+            element={<CashControl />}
           />
 
           {/* Dashboard Area with Sidebar Persistence */}
