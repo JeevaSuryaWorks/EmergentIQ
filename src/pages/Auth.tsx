@@ -119,7 +119,9 @@ const Auth = () => {
                                             <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
                                             <Input
                                                 id="fullName"
+                                                name="name"
                                                 type="text"
+                                                autoComplete="name"
                                                 placeholder="John Doe"
                                                 className="bg-white/5 border-white/10 pl-10 h-12 focus:ring-primary/50"
                                                 value={fullName}
@@ -137,7 +139,9 @@ const Auth = () => {
                                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
                                     <Input
                                         id="email"
+                                        name="email"
                                         type="email"
+                                        autoComplete="email"
                                         placeholder="name@example.com"
                                         className="bg-white/5 border-white/10 pl-10 h-12 focus:ring-primary/50"
                                         value={email}
@@ -154,7 +158,9 @@ const Auth = () => {
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
                                     <Input
                                         id="password"
+                                        name="password"
                                         type={showPassword ? "text" : "password"}
+                                        autoComplete={isLogin ? "current-password" : "new-password"}
                                         placeholder="••••••••"
                                         className="bg-white/5 border-white/10 pl-10 pr-10 h-12 focus:ring-primary/50"
                                         value={password}

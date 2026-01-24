@@ -95,6 +95,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
     });
+
+    if (error?.message?.includes("Invalid login credentials") || (error as any)?.status === 400) {
+      setIsLoading(false);
+      return { error: new Error("Invalid email or password.") };
+    }
+
+    setIsLoading(false);
     return { error: error as Error | null };
   };
 
@@ -112,7 +119,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     if (error?.message?.includes("Too many requests") || (error as any)?.status === 429) {
+      setIsLoading(false);
       return { error: new Error("Too many sign-up attempts. Please wait a few minutes before trying again.") };
+    }
+
+    if ((error as any)?.status === 500 || error?.message?.includes("Database error")) {
+      setIsLoading(false);
+      return { error: new Error("Server Error: Your SMTP configuration might be incorrect or the email service is down. Please check your Supabase Auth Logs.") };
     }
 
     setIsLoading(false);
