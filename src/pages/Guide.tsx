@@ -76,7 +76,7 @@ const Guide = () => {
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.05)_100%)]" />
                                 <img
                                     src="/EmergentIQ_Logo.png"
-                                    alt="EmergentIQ Central Hub"
+                                    alt="EmergentIQ Inc"
                                     className="w-full h-full object-contain p-8 md:p-10 opacity-100 z-10"
                                 />
                                 <div className="absolute bottom-4 left-0 right-0 text-center z-20">
