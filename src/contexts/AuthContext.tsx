@@ -110,6 +110,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       },
     });
+
+    if (error?.message?.includes("Too many requests") || (error as any)?.status === 429) {
+      return { error: new Error("Too many sign-up attempts. Please wait a few minutes before trying again.") };
+    }
+
     setIsLoading(false);
     return { error: error as Error | null };
   };
