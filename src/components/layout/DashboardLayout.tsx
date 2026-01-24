@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 
 
-export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+export const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
     const { theme } = useTheme();
     const isNaruto = theme === "light";
 

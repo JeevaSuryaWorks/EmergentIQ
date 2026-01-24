@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -44,43 +44,29 @@ const AnimatedRoutes = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/email-verified" element={<EmailVerified />} />
           <Route path="/email-waiting" element={<EmailWaiting />} />
+          {/* Dashboard Area with Sidebar Persistence */}
           <Route
-            path="/chat"
             element={
               <ProtectedRoute>
-                <DashboardLayout>
-                  <Chat />
-                </DashboardLayout>
+                <SidebarProvider>
+                  <DashboardLayout>
+                    <Outlet />
+                  </DashboardLayout>
+                </SidebarProvider>
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/compare" element={<Compare />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/saved" element={<Saved />} />
+          </Route>
+
           <Route
-            path="/compare"
+            path="/onboarding"
             element={
               <ProtectedRoute>
-                <DashboardLayout>
-                  <Compare />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Admin />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/saved"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Saved />
-                </DashboardLayout>
+                <Onboarding />
               </ProtectedRoute>
             }
           />
@@ -90,14 +76,6 @@ const AnimatedRoutes = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/guide" element={<Guide />} />
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute>
-                <Onboarding />
-              </ProtectedRoute>
-            }
-          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -115,12 +93,10 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <SidebarProvider>
-            <BrowserRouter>
-              <ScrollToTop />
-              <AnimatedRoutes />
-            </BrowserRouter>
-          </SidebarProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <AnimatedRoutes />
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </AuthProvider>
