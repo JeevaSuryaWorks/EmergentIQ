@@ -11,7 +11,7 @@ import {
 interface QuickActionsProps {
   onAction: (query: string) => void;
   userContext?: {
-    locations?: string[];
+    locations?: (string | { label: string })[];
     interests?: string[];
   };
 }
@@ -55,14 +55,26 @@ export const QuickActions = ({ onAction, userContext }: QuickActionsProps) => {
 
     // Inject location context for relevant actions
     if (userContext?.locations?.length && (label === "By Location" || label === "Top Universities" || label === "Rankings")) {
-      const location = userContext.locations[0];
-      personalizedQuery += ` in ${location}`;
+      // Extract the most specific part (Region) for the query string to keep it natural
+      const locationData = userContext.locations[0];
+      const fullLocationLabel = typeof locationData === 'string' ? locationData : locationData.label;
+      const region = fullLocationLabel.split(',')[0].trim();
+
+      if (label === "By Location") {
+        personalizedQuery = `What are the best universities in ${region} for international students?`;
+      } else {
+        personalizedQuery += ` in ${region}`;
+      }
     }
 
     // Inject interest context
     if (userContext?.interests?.length && (label === "Courses" || label === "Top Universities")) {
       const focus = userContext.interests[0];
-      personalizedQuery += ` for ${focus}`;
+      if (label === "Courses") {
+        personalizedQuery = `What ${focus} courses does top universities offer?`;
+      } else {
+        personalizedQuery += ` for ${focus}`;
+      }
     }
 
     onAction(personalizedQuery);

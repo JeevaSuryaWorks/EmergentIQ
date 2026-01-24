@@ -346,10 +346,7 @@ export const AppSidebar = () => {
 
                         <DropdownMenuSeparator className="bg-white/5" />
 
-                        <DropdownMenuItem onClick={() => signOut()} className="text-red-400 hover:text-red-300 hover:bg-red-500/10 py-2.5 mb-1 cursor-pointer">
-                            <LogOut className="w-4 h-4 mr-3" />
-                            <span className="text-xs font-medium">Sign Out</span>
-                        </DropdownMenuItem>
+                        {/* Sign out removed from sidebar - moved to settings */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarFooter>

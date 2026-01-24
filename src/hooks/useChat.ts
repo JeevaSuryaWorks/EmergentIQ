@@ -71,12 +71,19 @@ export const useChat = (initialSessionId?: string) => {
       // Construct personalization context string
       let personalizationContext = "";
       if (onboardingData) {
-        personalizationContext = `User Preferences: 
-        Destinations: ${onboardingData.locations?.join(", ") || "Any"}
-        Interests: ${onboardingData.interests?.join(", ") || "General academics"}
-        Degree Level: ${onboardingData.degreeLevel || "Not specified"}
-        Budget: ${onboardingData.budgetRange || "Not specified"}
-        Study Mode: ${onboardingData.studyMode || "On-campus"}`;
+        const locations = onboardingData.locations?.map((l: any) => l.label).join(", ") || "Any";
+        const interests = Array.isArray(onboardingData.interests) ? onboardingData.interests.join(", ") : "General academics";
+        const budgetLabel = onboardingData.budget?.label || "Not specified";
+        const degreeLevels = onboardingData.degreeLevels?.join(", ") || "Not specified";
+        const studyModes = onboardingData.studyModes?.join(", ") || "On-campus";
+
+        personalizationContext = `[Personalization Context]
+        Target Destinations: ${locations}
+        Academic Focus: ${interests}
+        Degree Level: ${degreeLevels}
+        Financial Strategy: ${budgetLabel} (Primary Currency: INR)
+        Study Mode: ${studyModes}
+        Language: ${onboardingData.languagePreference || "English"}`;
       }
 
       // 2. Prepare the payload (including previous messages)
@@ -90,7 +97,7 @@ export const useChat = (initialSessionId?: string) => {
         body: {
           messages: currentMessages,
           sessionId,
-          userId: session?.user?.id,
+          userId: user?.id,
           userContext: personalizationContext, // New field for personalization
         },
         signal: abortControllerRef.current.signal,

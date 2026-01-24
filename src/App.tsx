@@ -28,7 +28,9 @@ const Careers = lazy(() => import("@/pages/Careers"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const Guide = lazy(() => import("@/pages/Guide"));
-const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const Onboarding = lazy(() => import("@/pages/OnboardingFlow"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Profile = lazy(() => import("@/pages/Profile"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -60,6 +62,8 @@ const AnimatedRoutes = () => {
             <Route path="/compare" element={<Compare />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/saved" element={<Saved />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           <Route
