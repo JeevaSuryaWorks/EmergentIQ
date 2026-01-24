@@ -27,18 +27,36 @@ const EmailVerified = () => {
                         </div>
 
                         <h1 className="text-3xl font-bold tracking-tight mb-4">
-                            Email Verified!
+                            Verification Successful
                         </h1>
 
-                        <p className="text-white/60 mb-8 leading-relaxed">
-                            Your email address has been successfully verified. You now have full access to all features of EmergentIQ.
+                        <p className="text-white/60 mb-8 leading-relaxed max-w-sm mx-auto">
+                            Thank you for joining **EmergentIQ**. Your account is now active and you can explore 10,000+ global institutions with AI-driven precision.
                         </p>
 
+                        <div className="space-y-6 text-left mb-8 p-6 bg-white/5 rounded-2xl border border-white/5">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-primary mb-2">Platform Access</h3>
+                            <ul className="text-xs text-white/40 space-y-2">
+                                <li className="flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-primary" />
+                                    AI-Powered College Consultation
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-primary" />
+                                    Interactive University Comparison
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-primary" />
+                                    Global Academic Rankings (2025/26)
+                                </li>
+                            </ul>
+                        </div>
+
                         <Button
-                            onClick={() => navigate("/dashboard")}
+                            onClick={() => navigate("/onboarding")}
                             className="w-full h-12 text-lg font-semibold rounded-xl bg-primary hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                         >
-                            Continue to Dashboard
+                            Next
                             <ArrowRight className="w-5 h-5" />
                         </Button>
                     </div>

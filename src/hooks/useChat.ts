@@ -54,26 +54,44 @@ export const useChat = (initialSessionId?: string) => {
     setIsLoading(true);
 
     // Use a fresh abort controller for each request
-    if (abortControllerRef.current) abortControllerRef.current.abort();
+    if (abortControllerRef.current) {
+      try {
+        abortControllerRef.current.abort();
+      } catch (e) {
+        console.debug("Silent abort failed:", e);
+      }
+    }
     abortControllerRef.current = new AbortController();
 
     try {
-      // 1. Get current session instead of full user check
+      // 1. Get current session and user metadata for personalization
       const { data: { session } } = await supabase.auth.getSession();
+      const onboardingData = session?.user?.user_metadata?.onboarding_data;
+
+      // Construct personalization context string
+      let personalizationContext = "";
+      if (onboardingData) {
+        personalizationContext = `User Preferences: 
+        Destinations: ${onboardingData.locations?.join(", ") || "Any"}
+        Interests: ${onboardingData.interests?.join(", ") || "General academics"}
+        Degree Level: ${onboardingData.degreeLevel || "Not specified"}
+        Budget: ${onboardingData.budgetRange || "Not specified"}
+        Study Mode: ${onboardingData.studyMode || "On-campus"}`;
+      }
 
       // 2. Prepare the payload (including previous messages)
-      // We use a functional update for messages but for the payload we need the current snapshot
       const currentMessages = [...messages, userMessage].map(m => ({
         role: m.role,
         content: m.content
       }));
 
-      // 3. Invoke function with signal
+      // 3. Invoke function with signal and user context
       const { data, error } = await supabase.functions.invoke('chat', {
         body: {
           messages: currentMessages,
           sessionId,
           userId: session?.user?.id,
+          userContext: personalizationContext, // New field for personalization
         },
         signal: abortControllerRef.current.signal,
       });
@@ -97,8 +115,9 @@ export const useChat = (initialSessionId?: string) => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error: any) {
-      if (error.name === 'AbortError') {
-        console.debug("Chat request cancelled by user");
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        console.debug("Chat request cancelled by user or internal signal");
+        return; // Exit silently
       } else {
         console.error("Chat error details:", error);
         // If it's a FunctionsHttpError, it might have context
@@ -129,8 +148,18 @@ export const useChat = (initialSessionId?: string) => {
   }, []);
 
   const cancelRequest = useCallback(() => {
-    abortControllerRef.current?.abort();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, []);
 
   return {

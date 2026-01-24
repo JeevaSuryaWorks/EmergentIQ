@@ -6,7 +6,7 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+serve(async (req: Request) => {
     if (req.method === "OPTIONS") {
         return new Response(null, { headers: corsHeaders });
     }
@@ -32,7 +32,7 @@ serve(async (req) => {
             .select("role")
             .eq("user_id", user.id);
 
-        const isAdmin = roles?.some((r) => r.role === "admin");
+        const isAdmin = roles?.some((r: { role: string }) => r.role === "admin");
         if (!isAdmin) {
             return new Response(JSON.stringify({ error: "Forbidden: Admin access required" }), {
                 status: 403,
@@ -85,7 +85,7 @@ serve(async (req) => {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-    } catch (error) {
+    } catch (error: any) {
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -10,6 +10,10 @@ import {
 
 interface QuickActionsProps {
   onAction: (query: string) => void;
+  userContext?: {
+    locations?: string[];
+    interests?: string[];
+  };
 }
 
 const quickActions = [
@@ -45,7 +49,23 @@ const quickActions = [
   },
 ];
 
-export const QuickActions = ({ onAction }: QuickActionsProps) => {
+export const QuickActions = ({ onAction, userContext }: QuickActionsProps) => {
+  const handleAction = (query: string, label: string) => {
+    let personalizedQuery = query;
+
+    // Inject location context for relevant actions
+    if (userContext?.locations?.length && (label === "By Location" || label === "Top Universities" || label === "Rankings")) {
+      personalizedQuery += ` in ${userContext.locations[0]}`;
+    }
+
+    // Inject interest context
+    if (userContext?.interests?.length && label === "Courses") {
+      personalizedQuery += ` related to ${userContext.interests[0]}`;
+    }
+
+    onAction(personalizedQuery);
+  };
+
   return (
     <div className="flex flex-wrap gap-2 justify-center">
       {quickActions.map((action) => (
@@ -53,7 +73,7 @@ export const QuickActions = ({ onAction }: QuickActionsProps) => {
           key={action.label}
           variant="outline"
           size="sm"
-          onClick={() => onAction(action.query)}
+          onClick={() => handleAction(action.query, action.label)}
           className="gap-2 bg-card/50 hover:bg-card hover:shadow-soft border-border/50 text-foreground transition-all duration-200 hover:scale-[1.02]"
         >
           <action.icon className="w-4 h-4 text-accent" />

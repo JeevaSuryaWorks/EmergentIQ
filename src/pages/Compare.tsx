@@ -225,14 +225,14 @@ const Compare = () => {
 
   return (
     <ScrollArea className="flex-1 h-full">
-      <div className="p-8 md:p-12 max-w-7xl mx-auto flex flex-col gap-8 pb-32">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-8 md:p-12 max-w-7xl mx-auto flex flex-col gap-6 md:gap-8 pb-32">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2 md:px-0">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">Compare Colleges</h1>
-            <p className="text-white/40">Benchmarking global institutions for your future.</p>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-1 text-white">Compare Colleges</h1>
+            <p className="text-white/40 text-xs md:text-sm">Benchmarking global institutions for your future.</p>
           </div>
           {selectedColleges.length > 0 && (
-            <Button variant="outline" onClick={shareComparison} className="rounded-xl border-white/10 bg-white/5 hover:bg-white/10 h-11 px-6">
+            <Button variant="outline" onClick={shareComparison} className="rounded-xl border-white/10 bg-white/5 hover:bg-white/10 h-10 md:h-11 px-4 md:px-6 w-full sm:w-auto text-xs md:text-sm transition-all">
               <Share2 className="h-4 w-4 mr-2" />
               Share Comparison
             </Button>
@@ -241,13 +241,13 @@ const Compare = () => {
 
         <section>
           {/* Search Section */}
-          <Card className="mb-8 bg-white/5 border-white/10 overflow-visible relative">
-            <CardHeader>
-              <CardTitle className="text-lg text-white">
+          <Card className="mb-6 md:mb-8 bg-white/5 border-white/10 overflow-visible relative mx-2 md:mx-0">
+            <CardHeader className="p-4 md:p-6 pb-2 md:pb-4">
+              <CardTitle className="text-sm md:text-lg text-white">
                 Add Colleges to Compare (2-5)
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
                 <Input
@@ -330,10 +330,10 @@ const Compare = () => {
           {selectedColleges.length >= 2 ? (
             <div className="flex flex-col gap-12">
               {/* Metric Comparison Charts (Recharts) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-white/5 border-white/10 p-6">
-                  <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-6">Acceptance Rate (%)</h3>
-                  <div className="h-64 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 px-2 md:px-0">
+                <Card className="bg-white/5 border-white/10 p-4 md:p-6">
+                  <h3 className="text-[10px] md:text-sm font-bold text-white/40 uppercase tracking-widest mb-4 md:mb-6 leading-none">Acceptance Rate (%)</h3>
+                  <div className="h-48 md:h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
@@ -362,9 +362,9 @@ const Compare = () => {
                   </div>
                 </Card>
 
-                <Card className="bg-white/5 border-white/10 p-6">
-                  <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-6">Total Students</h3>
-                  <div className="h-64 w-full">
+                <Card className="bg-white/5 border-white/10 p-4 md:p-6">
+                  <h3 className="text-[10px] md:text-sm font-bold text-white/40 uppercase tracking-widest mb-4 md:mb-6 leading-none">Total Students</h3>
+                  <div className="h-48 md:h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
@@ -394,7 +394,7 @@ const Compare = () => {
                 </Card>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden mx-2 md:mx-0">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>

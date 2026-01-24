@@ -15,6 +15,7 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarGroupContent,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import {
     MessageSquare,
@@ -24,6 +25,7 @@ import {
     User,
     Settings,
     GraduationCap,
+    Shield,
     Sun,
     Moon
 } from "lucide-react";
@@ -53,6 +55,7 @@ import {
 
 const ChatHistoryItems = () => {
     const { sessions, isLoading, renameSession, deleteSession } = useChatHistory();
+    const { setOpenMobile } = useSidebar();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const currentSessionId = searchParams.get("session");
@@ -122,7 +125,10 @@ const ChatHistoryItems = () => {
                     ) : (
                         <>
                             <SidebarMenuButton
-                                onClick={() => navigate(`/chat?session=${session.session_id}`)}
+                                onClick={() => {
+                                    navigate(`/chat?session=${session.session_id}`);
+                                    setOpenMobile(false);
+                                }}
                                 isActive={currentSessionId === session.session_id}
                                 className={cn(
                                     "w-full h-10 rounded-xl px-4 flex items-center gap-3 transition-all truncate pr-14",
@@ -188,6 +194,7 @@ const ChatHistoryItems = () => {
 
 export const AppSidebar = () => {
     const { user, signOut, isAdmin } = useAuth();
+    const { setOpenMobile } = useSidebar();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -205,16 +212,19 @@ export const AppSidebar = () => {
             "border-r transition-colors duration-700",
             isNaruto ? "border-red-900/20 bg-[#080808]/80 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.5)]" : "border-white/5 bg-black/50 backdrop-blur-xl"
         )}>
-            <SidebarHeader className="p-6">
-                <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate("/")}>
+            <SidebarHeader className="p-4 md:p-6">
+                <div className="flex items-center gap-3 cursor-pointer group" onClick={() => {
+                    navigate("/");
+                    setOpenMobile(false);
+                }}>
                     <div className={cn(
-                        "w-9 h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110",
+                        "w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110",
                         isNaruto ? "bg-red-600 shadow-red-600/30" : "bg-primary shadow-primary/20"
                     )}>
-                        <GraduationCap className="w-5 h-5 text-white" />
+                        <GraduationCap className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
                     <span className={cn(
-                        "font-bold text-xl tracking-tight transition-colors duration-500",
+                        "font-bold text-lg md:text-xl tracking-tight transition-colors duration-500",
                         "text-white"
                     )}>EmergentIQ</span>
                 </div>
@@ -231,10 +241,13 @@ export const AppSidebar = () => {
                             {menuItems.map((item) => (
                                 <SidebarMenuItem key={item.path} className="mb-1">
                                     <SidebarMenuButton
-                                        onClick={() => navigate(item.path)}
+                                        onClick={() => {
+                                            navigate(item.path);
+                                            setOpenMobile(false);
+                                        }}
                                         isActive={location.pathname === item.path}
                                         className={cn(
-                                            "w-full h-12 rounded-xl px-4 flex items-center gap-3 transition-all duration-300",
+                                            "w-full h-11 md:h-12 rounded-xl px-4 flex items-center gap-3 transition-all duration-300",
                                             location.pathname === item.path
                                                 ? isNaruto
                                                     ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
@@ -265,8 +278,11 @@ export const AppSidebar = () => {
                         <SidebarMenu>
                             <SidebarMenuItem key="new-chat" className="mb-2">
                                 <SidebarMenuButton
-                                    onClick={() => navigate("/chat")}
-                                    className="w-full h-10 rounded-xl px-4 border border-white/5 bg-white/5 text-white hover:bg-white/10 flex items-center gap-3"
+                                    onClick={() => {
+                                        navigate("/chat");
+                                        setOpenMobile(false);
+                                    }}
+                                    className="w-full h-9 md:h-10 rounded-xl px-4 border border-white/5 bg-white/5 text-white hover:bg-white/10 flex items-center gap-3"
                                 >
                                     <MessageSquare className="w-4 h-4 text-primary" />
                                     <span className="font-bold text-xs">New Chat</span>
@@ -280,7 +296,7 @@ export const AppSidebar = () => {
 
 
             <SidebarFooter className={cn(
-                "p-4 border-t flex flex-col gap-2 transition-colors",
+                "p-3 md:p-4 border-t flex flex-col gap-2 transition-colors",
                 "border-white/5 bg-black/40"
             )}>
                 <DropdownMenu>
@@ -291,34 +307,48 @@ export const AppSidebar = () => {
                             isNaruto ? "hover:bg-zinc-100" : "hover:bg-white/5"
                         )}>
                             <Avatar className={cn(
-                                "h-10 w-10 border transition-colors",
+                                "h-9 w-9 md:h-10 md:w-10 border transition-colors",
                                 isNaruto ? "border-zinc-200" : "border-white/20 group-hover:border-primary/50"
                             )}>
-                                <AvatarFallback className="bg-primary/20 text-primary font-bold">
+                                <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs md:text-sm">
                                     {user?.email?.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="flex-1 text-left hidden lg:block overflow-hidden">
-                                <p className={cn("text-sm font-bold truncate", "text-white")}>{user?.email?.split('@')[0]}</p>
-                                <p className={cn("text-[10px] truncate font-medium", "text-white/40")}>Verified Account</p>
+                            <div className="flex-1 text-left overflow-hidden">
+                                <p className={cn("text-xs md:text-sm font-bold truncate", "text-white")}>{user?.email?.split('@')[0]}</p>
+                                <p className={cn("text-[9px] md:text-[10px] truncate font-medium", "text-white/40")}>Verified Member</p>
                             </div>
-                            <Settings className={cn("w-4 h-4 transition-colors", isNaruto ? "text-zinc-400 group-hover:text-zinc-900" : "text-white/40 group-hover:text-white")} />
+                            <Settings className={cn("w-3.5 h-3.5 md:w-4 md:h-4 shrink-0 transition-colors", isNaruto ? "text-zinc-400 group-hover:text-zinc-900" : "text-white/40 group-hover:text-white")} />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border-white/10 backdrop-blur-3xl mb-4 shadow-2xl">
                         <div className="px-3 py-2 border-b border-white/5">
-                            <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-1">Account</p>
-                            <p className="text-sm text-white/90 truncate font-medium">{user?.email}</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-1">Account</p>
+                            <p className="text-sm text-white/90 truncate font-semibold">{user?.email}</p>
                         </div>
+
+                        <DropdownMenuItem onClick={() => navigate("/profile")} className="text-white/70 hover:text-white hover:bg-white/10 py-2.5 mt-1 cursor-pointer">
+                            <User className="w-4 h-4 mr-3 text-primary/70" />
+                            <span className="text-xs font-medium">My Profile</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => navigate("/settings")} className="text-white/70 hover:text-white hover:bg-white/10 py-2.5 cursor-pointer">
+                            <Settings className="w-4 h-4 mr-3 text-primary/70" />
+                            <span className="text-xs font-medium">Settings</span>
+                        </DropdownMenuItem>
+
                         {isAdmin && (
-                            <DropdownMenuItem onClick={() => navigate("/admin")} className="text-white/70 hover:text-white hover:bg-white/10 py-3 mt-1">
-                                <Settings className="w-4 h-4 mr-3" />
-                                Admin Panel
+                            <DropdownMenuItem onClick={() => navigate("/admin")} className="text-white/70 hover:text-white hover:bg-white/10 py-2.5 cursor-pointer">
+                                <Shield className="w-4 h-4 mr-3 text-purple-400/70" />
+                                <span className="text-xs font-medium">Admin Panel</span>
                             </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem onClick={() => signOut()} className="text-red-400 hover:text-red-300 hover:bg-red-500/10 py-3">
+
+                        <DropdownMenuSeparator className="bg-white/5" />
+
+                        <DropdownMenuItem onClick={() => signOut()} className="text-red-400 hover:text-red-300 hover:bg-red-500/10 py-2.5 mb-1 cursor-pointer">
                             <LogOut className="w-4 h-4 mr-3" />
-                            Sign Out
+                            <span className="text-xs font-medium">Sign Out</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

@@ -4,6 +4,7 @@ import { ChatInput } from "./ChatInput";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChat } from "@/hooks/useChat";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +14,9 @@ import { useSearchParams } from "react-router-dom";
 export const ChatWindow = () => {
   const [searchParams] = useSearchParams();
   const sessionIdParam = searchParams.get("session");
+  const { user } = useAuth();
   const { messages, isLoading, sendMessage, loadSession, clearMessages } = useChat(sessionIdParam || undefined);
+  const onboardingData = user?.user_metadata?.onboarding_data;
   const { theme } = useTheme();
   const isNaruto = theme === "light";
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -44,10 +47,10 @@ export const ChatWindow = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden relative">
         {messages.length === 0 ? (
-          <WelcomeScreen onQuickAction={sendMessage} />
+          <WelcomeScreen onQuickAction={sendMessage} userContext={onboardingData} />
         ) : (
-          <ScrollArea className="h-full px-4">
-            <div className="container max-w-3xl mx-auto pt-10 pb-40 space-y-8">
+          <ScrollArea className="h-full px-4 md:px-6">
+            <div className="container max-w-3xl mx-auto pt-6 md:pt-10 pb-32 md:pb-40 space-y-6 md:space-y-8">
               {messages.map((message) => (
                 <ChatMessage
                   key={message.id}
@@ -66,10 +69,10 @@ export const ChatWindow = () => {
 
       {/* Fixed/Anchored Input Area */}
       <div className={cn(
-        "absolute bottom-0 left-0 right-0 p-6 z-10 transition-all duration-700",
+        "absolute bottom-0 left-0 right-0 p-4 md:p-6 z-10 transition-all duration-700",
         isNaruto
-          ? "bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent"
-          : "bg-gradient-to-t from-black via-black/80 to-transparent"
+          ? "bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent"
+          : "bg-gradient-to-t from-black via-black/95 to-transparent"
       )}>
         <div className="max-w-3xl mx-auto">
           <ChatInput onSend={sendMessage} isLoading={isLoading} />

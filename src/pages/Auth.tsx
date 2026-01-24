@@ -50,7 +50,8 @@ const Auth = () => {
                 if (error) {
                     toast.error(error.message);
                 } else {
-                    toast.success("Account created! Please check your email to verify.");
+                    toast.success("Verification email sent!");
+                    navigate("/email-waiting");
                 }
             }
         } finally {
@@ -65,20 +66,20 @@ const Auth = () => {
 
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
-            <div className="relative z-10 w-full flex flex-col items-center justify-center p-4">
+            <div className="relative z-10 w-full flex flex-col items-center justify-center p-6 md:p-8">
                 {/* Logo/Back Section */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-8 left-8"
+                    className="absolute top-6 left-6 md:top-8 md:left-8"
                 >
                     <Button
                         variant="ghost"
-                        className="text-white/60 hover:text-white hover:bg-white/10"
+                        className="text-white/60 hover:text-white hover:bg-white/10 px-3 md:px-4"
                         onClick={() => navigate("/")}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
+                        <span className="hidden sm:inline">Back</span>
                     </Button>
                 </motion.div>
 
@@ -88,21 +89,21 @@ const Auth = () => {
                     transition={{ duration: 0.4 }}
                     className="w-full max-w-md"
                 >
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-6 shadow-2xl shadow-primary/20">
-                            <GraduationCap className="w-8 h-8 text-white" />
+                    <div className="text-center mb-6 md:mb-8 mt-12 md:mt-0">
+                        <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-primary mb-4 md:mb-6 shadow-2xl shadow-primary/20">
+                            <GraduationCap className="w-7 h-7 md:w-8 md:h-8 text-white" />
                         </div>
-                        <h1 className="text-4xl font-bold tracking-tight mb-2">
+                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
                             {isLogin ? "Welcome Back" : "Join EmergentIQ"}
                         </h1>
-                        <p className="text-white/50">
+                        <p className="text-sm md:text-base text-white/50 px-4">
                             {isLogin
                                 ? "Experience the future of college discovery."
                                 : "Your journey towards the perfect education starts here."}
                         </p>
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] backdrop-blur-xl shadow-2xl">
+                    <div className="bg-white/5 border border-white/10 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] backdrop-blur-xl shadow-2xl mx-1 md:mx-0">
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <AnimatePresence mode="wait">
                                 {!isLogin && (

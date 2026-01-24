@@ -60,7 +60,17 @@ const Globe = () => {
 export const Hero3D = () => {
     return (
         <div className="absolute inset-0 w-full h-full -z-10 bg-black">
-            <Canvas camera={{ position: [0, 0, 8], fov: 45 }} gl={{ antialias: true, powerPreference: "high-performance" }}>
+            <Canvas
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                gl={{
+                    antialias: true,
+                    powerPreference: "high-performance",
+                    preserveDrawingBuffer: false,
+                    alpha: false
+                }}
+                dpr={[1, 2]} // Performance optimization for high-DPI screens
+                performance={{ min: 0.5 }}
+            >
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} color="#3b82f6" />
                 <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
