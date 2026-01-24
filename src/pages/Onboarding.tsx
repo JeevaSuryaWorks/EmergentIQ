@@ -93,7 +93,11 @@ const Onboarding = () => {
             if (error) throw error;
 
             toast.success("Welcome aboard! Personalizing your experience...");
-            navigate("/chat");
+
+            // Allow a tiny moment for session sync
+            setTimeout(() => {
+                navigate("/chat");
+            }, 500);
         } catch (error: any) {
             toast.error(error.message || "Failed to save preferences");
         } finally {

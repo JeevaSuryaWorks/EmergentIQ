@@ -65,8 +65,8 @@ export const useChat = (initialSessionId?: string) => {
 
     try {
       // 1. Get current session and user metadata for personalization
-      const { data: { session } } = await supabase.auth.getSession();
-      const onboardingData = session?.user?.user_metadata?.onboarding_data;
+      const { data: { user } } = await supabase.auth.getUser();
+      const onboardingData = user?.user_metadata?.onboarding_data;
 
       // Construct personalization context string
       let personalizationContext = "";

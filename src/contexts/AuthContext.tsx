@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
       options: {
-        emailRedirectTo: options?.emailRedirectTo || window.location.origin,
+        emailRedirectTo: options?.emailRedirectTo || "https://emergentiq.vercel.app/email-verified",
         data: {
           full_name: fullName,
         },

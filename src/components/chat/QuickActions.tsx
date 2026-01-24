@@ -55,12 +55,14 @@ export const QuickActions = ({ onAction, userContext }: QuickActionsProps) => {
 
     // Inject location context for relevant actions
     if (userContext?.locations?.length && (label === "By Location" || label === "Top Universities" || label === "Rankings")) {
-      personalizedQuery += ` in ${userContext.locations[0]}`;
+      const location = userContext.locations[0];
+      personalizedQuery += ` in ${location}`;
     }
 
     // Inject interest context
-    if (userContext?.interests?.length && label === "Courses") {
-      personalizedQuery += ` related to ${userContext.interests[0]}`;
+    if (userContext?.interests?.length && (label === "Courses" || label === "Top Universities")) {
+      const focus = userContext.interests[0];
+      personalizedQuery += ` for ${focus}`;
     }
 
     onAction(personalizedQuery);
