@@ -294,7 +294,7 @@ const Compare = () => {
                             </div>
                           </div>
                           <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                            <span className="text-primary text-xs">AI</span>
+                            <span className="text-primary text-xs">JS</span>
                           </div>
                         </button>
                       </div>

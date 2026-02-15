@@ -196,7 +196,7 @@ const ChatHistoryItems = () => {
 
 export const AppSidebar = () => {
     const { user, signOut, isAdmin } = useAuth();
-    const { setOpenMobile, isMobile } = useSidebar();
+    const { setOpenMobile, isMobile, toggleSidebar } = useSidebar();
     const navigate = useNavigate();
     const location = useLocation();
     const [historyOpen, setHistoryOpen] = useState(false);
@@ -224,15 +224,18 @@ export const AppSidebar = () => {
                     className="flex items-center gap-3 cursor-pointer group transition-all duration-300"
                     onClick={() => {
                         navigate("/");
-                        if (isMobile) setOpenMobile(false);
+                        if (isMobile) {
+                            setOpenMobile(false);
+                        } else {
+                            toggleSidebar();
+                        }
                     }}
                 >
-                    <div className={cn(
-                        "w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110 shrink-0",
-                        isNaruto ? "bg-red-600 shadow-red-600/30" : "bg-primary shadow-primary/20"
-                    )}>
-                        <GraduationCap className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                    </div>
+                    <img
+                        src="/EmergentIQ_Logo.png"
+                        alt="EmergentIQ Logo"
+                        className="w-8 h-8 md:w-9 md:h-9 rounded-xl shadow-lg transition-all duration-500 group-hover:scale-110 shrink-0 object-cover"
+                    />
                     <span className={cn(
                         "font-bold text-lg md:text-xl tracking-tight transition-all duration-500",
                         "text-white"

@@ -57,7 +57,7 @@ export const ChatMessage = ({ content, role, isTyping }: ChatMessageProps) => {
         {isUser ? (
           <User className="w-4 h-4" />
         ) : (
-          <span className="text-[10px] font-black tracking-tighter text-white">AI</span>
+          <span className="text-[10px] font-black tracking-tighter text-white">JS</span>
         )}
       </div>
 
