@@ -35,19 +35,16 @@ const Contact = lazy(() => import("@/pages/Contact"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const CashControl = lazy(() => import("@/pages/admin/CashControl"));
 
-import { useAppLock } from "@/hooks/useAppLock";
-import { PaymentBlocker } from "@/components/access/PaymentBlocker";
+
+
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const { isUnlocked, isLoading } = useAppLock();
+
 
   return (
     <Suspense fallback={<ProductionLoader />}>
-      {/* Global Access Gate - Blocks everything except /cash if locked */}
-      {isUnlocked === false && !isLoading && location.pathname !== "/cash" && (
-        <PaymentBlocker />
-      )}
+
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
